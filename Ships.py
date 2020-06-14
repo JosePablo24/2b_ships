@@ -20,7 +20,6 @@ general_time = []
 finish = []
 best_time =[]
 MutationIndividue = 0.15
-global Boats_gen
 Boats_gen = []
 
 def Boat():
@@ -122,8 +121,8 @@ def crossover(boats):
 
 def generateShips(boats):
     #comboShips = []
-    orderShips =  [[] for i in range(len(boats))]
-    for items in range(len(boats)):
+    orderShips =  [[] for i in range(random.randint(int(n_order / 4), int(n_order / 2) ))]
+    for items in range(len(orderShips)):
         #orderShips[items].append(order[random.randint(1, len(order)) - 1])
         #print("barcos", items)
         randomsShips = []
@@ -180,15 +179,26 @@ def mutation(Sons, boats):
 def selection(datas):
     if datas == 0:
         boatcrossmut = crossover(Boats)
-        Boats_gen.append(boatcrossmut[random.randint(1, len(boatcrossmut)) - 1])
+        dat = boatcrossmut[random.randint(1, len(boatcrossmut)) - 1]
+        Boats_gen.append(dat)        
     else:
+        #boatcrossmut = crossover(Boats)
+        #Boats_gen.append(boatcrossmut[random.randint(1, len(boatcrossmut)) - 1])
         f = 0
+        one_here = False
         while f != 1:
-            boatcrossmut = crossover(Boats)
-            for item in range(len(boatcrossmut)):
-                if (boatcrossmut[item] in Boats_gen) == False:
-                    Boats_gen.append(boatcrossmut[item])
-                    f = 1
+            one_here = False
+            if one_here == False:
+                boatcrossmut = crossover(Boats)
+                for item in range(len(boatcrossmut)):
+                    if one_here == False:
+                        if (boatcrossmut[item] in Boats_gen) == False:
+                            Boats_gen.append(boatcrossmut[item])
+                            one_here = True
+                            f = 1
+                    if item == len(boatcrossmut) and one_here == False:
+                        f = 0
+    return Boats_gen[datas]
 
 def Port(order, distance1, item, ship_datas):
     outs1.clear()
@@ -296,17 +306,27 @@ def Graphyc():
 
 if __name__ == '__main__':
     os.system("clear")
-    global Boats 
+    global Boats     
     (Boats , distance1) = Boat()
     ships.clear()    
-    (order) = permuta(Boats)
-    print(distance1)        
-    #print(outs)
-    #print(arrivals)
+    (order) = permuta(Boats)    
+    print(distance1)    
+    Boats_gen_aux = []
+    global n_order
+    n_order = len(order)
+    # print(" \n\n ")
+    # print("Cantidad de barcos → ", len(order), " \n Barcos → ", order)
+    # print("\n")
+    # for item in range(len(order)):
+    #     if order.count(order[item]) >= 2:
+    #         print("Se encontro que si hay repetidos → ", order[item], " en la posición →", item)
+    
     for datas in range(len(order)):
-        print("\n -------------------------------------- Vueltas: " + str(datas + 1) + " --------------------------------------")                                
-        selection(datas)
-        print("Dato real → ", Boats_gen[datas])
+        print("\n -------------------------------------- Vueltas: " + str(datas + 1) + " --------------------------------------")        
+        current_boat = selection(datas)        
+        Boats_gen_aux.append(str(current_boat))
+        order[datas] = current_boat
+        print("Dato real → ", current_boat)
         for item in range(N_Ports):            
             Port(order[datas], distance1[item], item, datas)
         time = 0
@@ -315,17 +335,26 @@ if __name__ == '__main__':
         general_time.append(round(((time - int(time)) * 0.6) + int(time),2))
         print("Cuantos botes salieron → ", len(order[datas]), " : " , order[datas])
     
+    print(" \n\n ")
+    print("Cantidad de barcos → ", len(Boats_gen_aux), " \n Barcos → ", Boats_gen_aux)
+    print("\n")
+    for item in range(len(order)):
+        if Boats_gen_aux.count(order[item]) >= 2:
+            print("Se encontro que si hay repetidos → ", Boats_gen_aux[item], " en la posición →", item)
+    
+    print("\n----- otros -----")
+    for item in range(len(order)):
+        if order.count(order[item]) >= 2:
+            print("Se encontro que si hay repetidos → ", order[item], " en la posición →", item, " Veces que aparecio → ", order.count(order[item]))
+    
+    print(" \n\n ")
     for datas in range(len(order)):
         finish.append(len(order[datas]))
         if len(order[datas]) == boat_N:
-            print("Cantidad Barcos → ", len(order[datas]), " Tiempo → ", general_time[datas])
-            best_time.append(general_time[datas])
-    
-    print("Cantidad de barcos → ", len(Boats_gen))
-    for item in range(len(Boats_gen)):
-        if Boats_gen.count(Boats_gen[item]) >= 2:
-            print("Se encontro que si hay repetidos → ", Boats_gen[item], " en la posición →", item)            
+            print("Cantidad Barcos → ", len(order[datas]), " Tiempo → ", order[datas])
+            best_time.append(general_time[datas])    
+    print(" \n\n ")
     print("Mejor tiempo con todos los barcos → ", sorted(best_time)[0])        
-    print("Tiempos de llegada por vuelta de los barcos → ", general_time)
-    print("Cantidad de barcos que pudieron terminar → ", finish)    
+    print("\nTiempos de llegada por vuelta de los barcos → ", general_time)
+    print("\nCantidad de barcos que pudieron terminar → ", finish)    
     Graphyc()
