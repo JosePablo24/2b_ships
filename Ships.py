@@ -1,11 +1,11 @@
 import random
 import math
 from matplotlib import pyplot as plt
-from numpy import binary_repr
+from numpy import binary_repr, linspace
 import itertools
 import os
 
-boat_N = 5 # Define el numero de barcos que quieres validar pero que sean menor que 8
+boat_N = 6 # Define el numero de barcos que quieres validar pero que sean menor que 8
 velMin = 40 # Define la velocidad minima que puede tener un barco
 velMax = 100 # Define la velocidad maxima que puede tener un barco
 N_Ports = 5 # Define el numero de puertos que se pueden pasar
@@ -296,16 +296,41 @@ def time_skip(time, less_time, ship_datas, opcion):
     time_skip1.clear()
     time_skip2.clear()
 
-def Graphyc():
-    plt.title("Tiempos")
-    plt.legend()
-    plt.plot(general_time, 'o-', label = " Mejores casos")
-    #plt.plot(worst_Fitnnes, 'o-', label = " Peores casos")
-    #plt.plot(media_Fitnnes, 'o-', label = "Caso promedio")
-    plt.xlabel("Vueltas")
-    plt.ylabel("Tiempo")
-    plt.rcParams['toolbar'] = 'None'
-    plt.legend()
+def color():
+    colores = ["red", "blue", "green", "orange", "greenyellow", "grey", "aqua", "c", "m"]
+    return  random.choice(colores)
+
+def Graphyc(timeBoat, timeBoats):    
+    datos = boat_N  + 2               
+    fig = plt.figure(figsize = (15,15))
+    fig.tight_layout()         
+    for items in range(datos):        
+        ax = plt.subplot(2,4,items + 1)                
+        col = color()
+        if items + 1 > boat_N:
+            if boat_N + 1 == items + 1 :
+                plt.bar(Boats, timeBoat, width = 0.8 , bottom = None, align= "edge", color = col)
+                plt.xticks(Boats)            
+                plt.ylabel("Tiempo")
+                plt.xlabel("Botes")
+                plt.title("Tiempos recorridos por los botes")
+
+            if boat_N + 2 == items + 1:
+                plt.title("Tiempos")
+                plt.legend()
+                plt.plot(general_time, 'o-', label = " Mejores casos", color = col)
+                plt.xlabel("Vueltas")
+                plt.ylabel("Tiempo")
+                plt.rcParams['toolbar'] = 'None'
+                plt.legend()
+
+        if items + 1  <= boat_N:            
+            plt.plot(timeBoats[items],'o-', label = " tiempos", color = col)
+            plt.xlabel("Vueltas")
+            plt.ylabel("Tiempo")
+            plt.rcParams['toolbar'] = 'None'            
+            plt.legend()
+            plt.title("Tiempos por Bote → " + str((items + 1)) + " : " + str(Boats[items]) )                    
     plt.show()
 
 if __name__ == '__main__':
@@ -374,4 +399,4 @@ if __name__ == '__main__':
     print("Mejor tiempo con todos los barcos → ", sorted(best_time)[0])
     print("\nTiempos de llegada por vuelta de los barcos → ", general_time)
     print("\nCantidad de barcos que pudieron terminar → ", finish)
-    Graphyc()
+    Graphyc(timeBoat, timeBoats)
